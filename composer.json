@@ -1,0 +1,29 @@
+{
+    "name": "aveiv/open-exchange-rates-api",
+    "description": "PHP wrapper for Open Exchange Rates API",
+    "type": "library",
+    "keywords": ["api", "currency"],
+    "homepage": "https://github.com/aveiv/open-exchange-rates-api",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexandr Veliko-Ivanenko",
+            "email": "aveiv92@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/aveiv/open-exchange-rates-api/issues"
+    },
+    "require": {
+        "php": ">=5.5.0",
+        "guzzlehttp/guzzle": "4.0.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aveiv\\OpenExchangeRatesApi\\": "src"
+        }
+    }
+}
