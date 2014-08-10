@@ -3,7 +3,7 @@
 ```php
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';1
+require __DIR__ . '/../vendor/autoload.php';
 
 use Aveiv\OpenExchangeRatesApi\Client;
 use GuzzleHttp\Client as GuzzleClient;
