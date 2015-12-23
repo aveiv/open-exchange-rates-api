@@ -2,115 +2,153 @@
 
 namespace Aveiv\OpenExchangeRatesApi;
 
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Query;
-use GuzzleHttp\Url;
+use Aveiv\OpenExchangeRatesApi\Exception\Exception;
+use GuzzleHttp\ClientInterface as HttpClient;
+use GuzzleHttp\Exception\RequestException;
 
-class Client {
-    const API_SCHEME = 'https';
-    const API_HOST = 'openexchangerates.org';
-    const API_PATH = 'api';
+class Client
+{
+    const API_BASE_URL = 'https://openexchangerates.org/api';
 
     /**
      * @var string
      */
-    private $appId;
+    protected $appId;
+
     /**
-     * @var ClientInterface
+     * @var HttpClient
      */
-    private $guzzleClient;
+    protected $guzzleClient;
 
     /**
      * @param string $appId
-     * @param ClientInterface $guzzleClient
+     * @param HttpClient $guzzleClient
      */
-    public function __construct($appId, ClientInterface $guzzleClient) {
+    public function __construct($appId, HttpClient $guzzleClient)
+    {
         $this->appId = $appId;
+        $this->guzzleClient = $guzzleClient;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAppId()
+    {
+        return $this->appId;
+    }
+
+    /**
+     * @param string $appId
+     */
+    public function setAppId($appId)
+    {
+        $this->appId = $appId;
+    }
+
+    /**
+     * @return HttpClient
+     */
+    public function getGuzzleClient()
+    {
+        return $this->guzzleClient;
+    }
+
+    /**
+     * @param HttpClient $guzzleClient
+     */
+    public function setGuzzleClient($guzzleClient)
+    {
         $this->guzzleClient = $guzzleClient;
     }
 
     /**
      * @return array
      */
-    public function getCurrencies() {
-        return $this->sendRequest('currencies.json');
+    public function getCurrencies()
+    {
+        return $this->sendRequest('/currencies.json');
     }
 
     /**
      * @param string|null $base
+     * @param array $symbols
      * @return array
      */
-    public function getLatest($base = null) {
-        if ($base) {
-            $body = $this->sendRequest('latest.json', ['base' => $base]);
-        } else {
-            $body = $this->sendRequest('latest.json');
-        }
+    public function getLatest($base = null, $symbols = [])
+    {
+        $query = [
+            'base' => $base,
+            'symbols' => implode(',', $symbols),
+        ];
+        $body = $this->sendRequest('/latest.json', $query);
         return $body;
     }
 
     /**
      * @param \DateTimeInterface|string $date
      * @param string|null $base
+     * @param array $symbols
      * @return array
      */
-    public function getHistorical($date, $base = null) {
+    public function getHistorical($date, $base = null, array $symbols = [])
+    {
         $path = ['historical'];
         if ($date instanceof \DateTimeInterface) {
-            $path[] = $date->format('Y-m-d') . '.json';
+            $path[] = $date->format('Y-m-d');
         } else {
-            $path[] = $date . '.json';
+            $path[] = $date;
         }
-        $path = implode('/', $path);
-        if ($base) {
-            $body = $this->sendRequest($path, ['base' => $base]);
-        } else {
-            $body = $this->sendRequest($path);
-        }
+        $path = '/' . implode('/', $path) . '.json';
+        $query = [
+            'base' => $base,
+            'symbols' => implode(',', $symbols),
+        ];
+        $body = $this->sendRequest($path, $query);
         return $body;
     }
 
     /**
-     * @param string $path
-     * @param Query|array|string|null $query
-     * @return array
-     * @throws RequestException
-     * @throws ApiException
+     * @param $path
+     * @param array $query
+     * @return mixed
+     * @throws Exception
      */
-    protected function sendRequest($path, $query = null) {
-        $url = $this->makeUrl($path, $query);
-        $badRequestMsg = 'Bad request: ' . $url;
+    protected function sendRequest($path, array $query = [])
+    {
+        $query['app_id'] = $this->appId;
+        $url = $this->buildUrl($path, $query);
         try {
-            $response = $this->guzzleClient->get($url, ['allow_redirects' => false]);
-        } catch (ClientException $e) {
-            if ($e->hasResponse() && ($body = json_decode($e->getResponse()->getBody(), true))) {
-                if (isset($body['error']) && $body['error']) {
-                    throw new ApiException($body['description'], $body['message'], $body['status']);
-                }
-            }
-            throw new RequestException($badRequestMsg, $e->getCode());
-        }
-        if (200 != $response->getStatusCode()) {
-            throw new RequestException($badRequestMsg, $response->getStatusCode());
+            $response = $this
+                ->guzzleClient
+                ->request('GET', $url);
+        } catch (RequestException $e) {
+            $response = $e->getResponse();
         }
         $body = json_decode($response->getBody(), true);
+        if (!$body || (isset($body['error']) && $body['error'])) {
+            $message = 'Network error.';
+            $code = 0;
+            if (isset($body['error'])) {
+                $message = $body['description'];
+                $code = $body['status'];
+            }
+            throw new Exception($message, $code);
+        }
         return $body;
     }
 
     /**
      * @param string $path
-     * @param Query|array|string|null $query
-     * @return Url
+     * @param array|null $query
+     * @return string
      */
-    protected function makeUrl($path, array $query = null) {
-        $url = new Url(self::API_SCHEME, self::API_HOST);
-        $url->addPath(self::API_PATH);
-        $url->addPath($path);
+    protected function buildUrl($path, array $query = null)
+    {
+        $url = static::API_BASE_URL . $path;
         if ($query) {
-            $url->setQuery($query);
+            $url .= '?' . http_build_query($query);
         }
-        $url->getQuery()->add('app_id', $this->appId);
         return $url;
     }
 }
