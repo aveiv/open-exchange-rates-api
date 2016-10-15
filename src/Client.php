@@ -79,8 +79,10 @@ class Client
     {
         $query = [
             'base' => $base,
-            'symbols' => implode(',', $symbols),
         ];
+        if ($symbols) {
+            $query['symbols'] = implode(',', $symbols);
+        }
         $body = $this->sendRequest('/latest.json', $query);
         return $body;
     }
@@ -102,8 +104,10 @@ class Client
         $path = '/' . implode('/', $path) . '.json';
         $query = [
             'base' => $base,
-            'symbols' => implode(',', $symbols),
         ];
+        if ($symbols) {
+            $query['symbols'] = implode(',', $symbols);
+        }
         $body = $this->sendRequest($path, $query);
         return $body;
     }
