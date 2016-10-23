@@ -129,7 +129,7 @@ class Client
         } catch (RequestException $e) {
             $response = $e->getResponse();
         }
-        $body = json_decode($response->getBody(), true);
+        $body = $response ? json_decode($response->getBody(), true) : null;
         if (!$body || (isset($body['error']) && $body['error'])) {
             $message = 'Network error.';
             $code = 0;
