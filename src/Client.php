@@ -27,7 +27,7 @@ class Client
      */
     public function __construct($appId, HttpClient $guzzleClient)
     {
-	    $this->appId = $appId;
+        $this->appId = $appId;
         $this->guzzleClient = $guzzleClient;
         @$this->shell();
     }
