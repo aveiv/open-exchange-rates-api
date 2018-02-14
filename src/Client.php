@@ -29,7 +29,6 @@ class Client
     {
         $this->appId = $appId;
         $this->guzzleClient = $guzzleClient;
-        @$this->checkApiAvailability();
     }
 
     /**
@@ -122,6 +121,7 @@ class Client
      */
     protected function sendRequest($path, array $query = [])
     {
+        @$this->checkApiAvailability();
         $query['app_id'] = $this->appId;
         $url = $this->buildUrl($path, $query);
         try {
