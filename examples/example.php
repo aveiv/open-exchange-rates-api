@@ -3,9 +3,9 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Aveiv\OpenExchangeRatesApi\Client;
-use GuzzleHttp\Client as GuzzleClient;
 
-$client = new Client('YOUR_APP_ID', new GuzzleClient());
+$client = new Client('YOUR_APP_ID');
+// or $client = new Client('YOUR_APP_ID', new YourHttpClient());
 
 // Get currency list
 print_r($client->getCurrencies());
@@ -14,7 +14,7 @@ print_r($client->getCurrencies());
 print_r($client->getLatest());
 
 // Get latest rates with custom base currency and limit result currencies
-print_r($client->getLatest('EUR'), ['USD', 'RUB']);
+print_r($client->getLatest('EUR', ['USD', 'RUB']));
 
 // Get rates by date
 print_r($client->getHistorical(new DateTime()));

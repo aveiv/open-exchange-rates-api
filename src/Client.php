@@ -3,8 +3,6 @@
 namespace Aveiv\OpenExchangeRatesApi;
 
 use Aveiv\OpenExchangeRatesApi\Exception\Exception;
-use GuzzleHttp\ClientInterface as HttpClient;
-use GuzzleHttp\Exception\RequestException;
 
 class Client
 {
@@ -16,18 +14,21 @@ class Client
     protected $appId;
 
     /**
-     * @var HttpClient
+     * @var HttpClientInterface
      */
-    protected $guzzleClient;
+    protected $httpClient;
 
     /**
      * @param string $appId
-     * @param HttpClient $guzzleClient
+     * @param HttpClientInterface|null $httpClient
      */
-    public function __construct($appId, HttpClient $guzzleClient)
+    public function __construct($appId, HttpClientInterface $httpClient = null)
     {
         $this->appId = $appId;
-        $this->guzzleClient = $guzzleClient;
+        $this->httpClient = $httpClient;
+        if (!$this->httpClient) {
+            $this->httpClient = new CurlHttpClient();
+        }
     }
 
     /**
@@ -47,23 +48,24 @@ class Client
     }
 
     /**
-     * @return HttpClient
+     * @return HttpClientInterface
      */
-    public function getGuzzleClient()
+    public function getHttpClient()
     {
-        return $this->guzzleClient;
+        return $this->httpClient;
     }
 
     /**
-     * @param HttpClient $guzzleClient
+     * @param HttpClientInterface $httpClient
      */
-    public function setGuzzleClient($guzzleClient)
+    public function setHttpClient(HttpClientInterface $httpClient)
     {
-        $this->guzzleClient = $guzzleClient;
+        $this->httpClient = $httpClient;
     }
 
     /**
      * @return array
+     * @throws Exception
      */
     public function getCurrencies()
     {
@@ -74,6 +76,7 @@ class Client
      * @param string|null $base
      * @param array $symbols
      * @return array
+     * @throws Exception
      */
     public function getLatest($base = null, $symbols = [])
     {
@@ -92,6 +95,7 @@ class Client
      * @param string|null $base
      * @param array $symbols
      * @return array
+     * @throws Exception
      */
     public function getHistorical($date, $base = null, array $symbols = [])
     {
@@ -122,14 +126,10 @@ class Client
     {
         $query['app_id'] = $this->appId;
         $url = $this->buildUrl($path, $query);
-        try {
-            $response = $this
-                ->guzzleClient
-                ->request('GET', $url);
-        } catch (RequestException $e) {
-            $response = $e->getResponse();
-        }
-        $body = $response ? json_decode($response->getBody(), true) : null;
+        $resp = $this
+            ->httpClient
+            ->get($url);
+        $body = $resp ? json_decode($resp, true) : null;
         if (!$body || (isset($body['error']) && $body['error'])) {
             $message = 'Network error.';
             $code = 0;

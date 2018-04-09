@@ -2,9 +2,9 @@
 
 namespace Aveiv\OpenExchangeRatesApi\Tests;
 
-use Aveiv\OpenExchangeRatesApi\Exception\Exception;
 use Aveiv\OpenExchangeRatesApi\Client;
-use GuzzleHttp\Client as GuzzleClient;
+use Aveiv\OpenExchangeRatesApi\CurlHttpClient;
+use Aveiv\OpenExchangeRatesApi\Exception\Exception;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
@@ -16,7 +16,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->client = new Client(API_KEY, new GuzzleClient());
+        $this->client = $this->buildClient();
+    }
+
+    protected function buildClient($apiKey = API_KEY)
+    {
+        return new Client($apiKey, new CurlHttpClient());
     }
 
     public function testCurrencies()
@@ -56,22 +61,19 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testLatestWithLimit()
     {
-        if (!ENTERPRISE_OR_UNLIMITED_ACCOUNT) {
-            $this->setExpectedException(Exception::class);
-        }
         $latest = $this->client->getLatest(null, ['EUR', 'RUB']);
-        if (ENTERPRISE_OR_UNLIMITED_ACCOUNT) {
-            $this->assertInternalType('array', $latest);
-            $this->assertArrayHasKey('base', $latest);
-        }
+        $this->assertInternalType('array', $latest);
+        $this->assertArrayHasKey('base', $latest);
     }
 
     public function testLatestWithInvalidLimit()
     {
-        if (ENTERPRISE_OR_UNLIMITED_ACCOUNT) {
-            $this->setExpectedException(Exception::class);
-            $this->client->getLatest(null, ['BAD_CURRENCY']);
-        }
+        $latest = $this->client->getLatest(null, ['BAD_CURRENCY']);
+        $this->assertInternalType('array', $latest);
+        $this->assertArrayHasKey('base', $latest);
+        $this->assertArrayHasKey('rates', $latest);
+        $this->assertInternalType('array', $latest['rates']);
+        $this->assertEmpty($latest['rates']);
     }
 
     public function testHistorical()
@@ -114,27 +116,24 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testHistoricalWithLimit()
     {
-        if (!ENTERPRISE_OR_UNLIMITED_ACCOUNT) {
-            $this->setExpectedException(Exception::class);
-        }
         $historical = $this->client->getHistorical(new \DateTime(), null, ['EUR', 'RUB']);
-        if (ENTERPRISE_OR_UNLIMITED_ACCOUNT) {
-            $this->assertInternalType('array', $historical);
-            $this->assertArrayHasKey('base', $historical);
-        }
+        $this->assertInternalType('array', $historical);
+        $this->assertArrayHasKey('base', $historical);
     }
 
     public function testHistoricalWithInvalidLimit()
     {
-        if (ENTERPRISE_OR_UNLIMITED_ACCOUNT) {
-            $this->setExpectedException(Exception::class);
-            $this->client->getHistorical(new \DateTime(), null, ['BAD_CURRENCY']);
-        }
+        $historical = $this->client->getHistorical(new \DateTime(), null, ['BAD_CURRENCY']);
+        $this->assertInternalType('array', $historical);
+        $this->assertArrayHasKey('base', $historical);
+        $this->assertArrayHasKey('rates', $historical);
+        $this->assertInternalType('array', $historical['rates']);
+        $this->assertEmpty($historical['rates']);
     }
 
     public function testInvalidAppId()
     {
-        $client = new Client('BAD_APP_ID', new GuzzleClient());
+        $client = $this->buildClient('BAD_APP_ID');
         $this->setExpectedException(Exception::class);
         $client->getCurrencies();
         $client->getLatest();
