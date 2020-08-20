@@ -2,6 +2,12 @@
 
 [![Latest Stable Version](https://poser.pugx.org/aveiv/open-exchange-rates-api/v)](//packagist.org/packages/aveiv/open-exchange-rates-api) [![Total Downloads](https://poser.pugx.org/aveiv/open-exchange-rates-api/downloads)](//packagist.org/packages/aveiv/open-exchange-rates-api) [![License](https://poser.pugx.org/aveiv/open-exchange-rates-api/license)](//packagist.org/packages/aveiv/open-exchange-rates-api)
 
+## Installation
+
+```
+composer require aveiv/open-exchange-rates-api
+```
+
 ## Usage example
 
 ```php
