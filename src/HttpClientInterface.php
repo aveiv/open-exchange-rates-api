@@ -1,12 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Aveiv\OpenExchangeRatesApi;
 
 interface HttpClientInterface
 {
-    /**
-     * @param string $url Request URL.
-     * @return string Respnse body.
-     */
-    public function get($url);
+    public function get(string $url): string;
 }

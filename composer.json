@@ -8,24 +8,30 @@
     "authors": [
         {
             "name": "Alexandr Veliko-Ivanenko",
-            "email": "me@aveiv.pro"
+            "email": "velivalex@gmail.com"
         }
     ],
     "support": {
         "issues": "https://github.com/aveiv/open-exchange-rates-api/issues"
     },
     "require": {
-        "php": ">=5.5.0"
+        "php": "^7.4",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "aveiv/mixed-value": "^0.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.8"
-    },
-    "suggest": {
-        "ext-curl": "For use CurlHttpClient"
+        "phpunit/phpunit": "^9.2",
+        "vimeo/psalm": "^3.14"
     },
     "autoload": {
         "psr-4": {
             "Aveiv\\OpenExchangeRatesApi\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Aveiv\\OpenExchangeRatesApi\\Tests\\": "tests/"
         }
     }
 }

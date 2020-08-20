@@ -1,27 +1,42 @@
-# PHP wrapper for [Open Exchange Rates](https://openexchangerates.org) API
-## Example
+## PHP wrapper for Open Exchange Rates API
+
+[![Latest Stable Version](https://poser.pugx.org/aveiv/open-exchange-rates-api/v)](//packagist.org/packages/aveiv/open-exchange-rates-api) [![Total Downloads](https://poser.pugx.org/aveiv/open-exchange-rates-api/downloads)](//packagist.org/packages/aveiv/open-exchange-rates-api) [![License](https://poser.pugx.org/aveiv/open-exchange-rates-api/license)](//packagist.org/packages/aveiv/open-exchange-rates-api)
+
+## Usage example
+
 ```php
-<?php
-
-require __DIR__ . '/../vendor/autoload.php';
-
-use Aveiv\OpenExchangeRatesApi\Client;
-
-$client = new Client('YOUR_APP_ID');
+$api = new OpenExchangeRates('YOUR_APP_ID');
 // or $client = new Client('YOUR_APP_ID', new YourHttpClient());
 
-// Get currency list
-print_r($client->getCurrencies());
 
-// Get latest rates
-print_r($client->getLatest());
+// Getting currencies
 
-// Get latest rates with custom base currency and limit result currencies
-print_r($client->getLatest('EUR', ['USD', 'RUB']));
+$api->currencies(); // returns ["USD" => "United States Dollar", ...]
 
-// Get rates by date
-print_r($client->getHistorical(new DateTime()));
+$api->currencies([
+    'show_alternative' => true, // include alternative currencies
+    'show_inactive' => true,    // include historical/inactive currencies
+]);
 
-// Get rates by date with custom base currency and limit result currencies
-print_r($client->getHistorical(new DateTime(), 'EUR', ['USD', 'RUB']));
+
+// Getting latest rates
+
+$api->latest(); // returns ["USD" => 1.0, ...]
+
+$api->latest([
+    'base' => 'EUR',             // base currency
+    'symbols' => ['CNY', 'USD'], // limit results to specific currencies
+    'show_alternative' => true,  // include alternative currencies
+]);
+
+
+// Getting historical rates
+
+$api->historical(new \DateTime('2020-01-01')); // ["USD" => 1.0, ...]
+
+$api->historical(new \DateTime('2020-01-01'), [
+    'base' => 'EUR',             // base currency
+    'symbols' => ['CNY', 'USD'], // limit results to specific currencies
+    'show_alternative' => true,  // include alternative currencies
+]);
 ```

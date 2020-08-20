@@ -1,15 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Aveiv\OpenExchangeRatesApi;
 
-class CurlHttpClient implements HttpClientInterface
+use Aveiv\OpenExchangeRatesApi\Exception\HttpException;
+
+final class CurlHttpClient implements HttpClientInterface
 {
-    public function get($url)
+    public function get(string $url): string
     {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        $resp = curl_exec($ch);
-        return $resp;
+        $res = curl_exec($ch);
+        if ($res === false) {
+            $err = curl_error($ch);
+            curl_close($ch);
+            throw new HttpException($err);
+        }
+        assert(is_string($res));
+        return $res;
     }
 }
