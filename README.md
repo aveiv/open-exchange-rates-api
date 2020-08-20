@@ -6,7 +6,7 @@
 
 ```php
 $api = new OpenExchangeRates('YOUR_APP_ID');
-// or $client = new Client('YOUR_APP_ID', new YourHttpClient());
+// or $client = new OpenExchangeRates('YOUR_APP_ID', new YourHttpClient());
 
 
 // Getting currencies
