@@ -121,4 +121,11 @@ class OpenExchangeRatesTest extends TestCase
         $this->assertArrayHasKey('BTS', $historical);
         $this->assertSame(67.2811091787, $historical['BTS']);
     }
+
+    public function testConvert(): void
+    {
+        $client = $this->buildClient();
+        $convertedValue = $client->convert(99.99, 'USD', 'EUR');
+        $this->assertIsFloat($convertedValue);
+    }
 }

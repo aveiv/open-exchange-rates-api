@@ -45,4 +45,9 @@ $api->historical(new \DateTime('2020-01-01'), [
     'symbols' => ['CNY', 'USD'], // limit results to specific currencies
     'show_alternative' => true,  // include alternative currencies
 ]);
+
+
+// Currency conversion
+
+$api->convert(99.99, 'USD', 'EUR'); // returns the converted value (from USD to EUR)
 ```

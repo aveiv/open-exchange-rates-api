@@ -123,6 +123,19 @@ final class OpenExchangeRates
     }
 
     /**
+     * @param float $value
+     * @param string $from
+     * @param string $to
+     * @return float
+     */
+    public function convert(float $value, string $from, string $to): float
+    {
+        $path = sprintf('/convert/%s/%s/%s', $value, urlencode($from), urlencode($to));
+        $res = $this->sendRequest($path);
+        return (new MixedValue($res))['response']->toFloat()->getValue();
+    }
+
+    /**
      * @param string $path
      * @param array $query
      * @return mixed
