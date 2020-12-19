@@ -162,7 +162,7 @@ final class OpenExchangeRates
      *
      * @psalm-param array<null>|array<scalar>|array<array<string>> $query
      */
-    private function buildUrl($path, array $query = null): string
+    private function buildUrl(string $path, array $query = null): string
     {
         $url = static::API_BASE_URL . $path;
         if ($query) {
