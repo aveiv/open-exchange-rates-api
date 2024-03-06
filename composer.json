@@ -15,7 +15,7 @@
         "issues": "https://github.com/aveiv/open-exchange-rates-api/issues"
     },
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^7.4|^8.0|^8.1",
         "ext-curl": "*",
         "ext-json": "*",
         "aveiv/mixed-value": "^0.3"
